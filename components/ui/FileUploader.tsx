@@ -233,7 +233,7 @@ const FileUploader = ({
               {uploadedFile.preview ? (
                 <img
                   src={uploadedFile.preview}
-                  alt={uploadedFile.file.name}
+                  alt={`Preview of ${uploadedFile.file.name}`}
                   className="h-10 w-10 object-cover rounded"
                 />
               ) : (

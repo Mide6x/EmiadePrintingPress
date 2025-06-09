@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Calculator, Info } from "lucide-react";
 
 interface PriceCalculatorProps {
@@ -52,7 +52,7 @@ const PriceCalculator = ({
     rush: { label: "Rush (24 hours)", multiplier: 1.8 },
   };
 
-  const calculatePrice = () => {
+  const calculatePrice = useCallback(() => {
     const sizeMultiplier =
       sizeOptions[size as keyof typeof sizeOptions].multiplier;
     const materialMultiplier =
@@ -89,11 +89,11 @@ const PriceCalculator = ({
 
     setPriceBreakdown(breakdown);
     onPriceChange?.(total, breakdown);
-  };
+  }, [basePrice, quantity, size, material, urgency, onPriceChange]);
 
   useEffect(() => {
     calculatePrice();
-  }, [quantity, size, material, urgency, basePrice]);
+  }, [quantity, size, material, urgency, basePrice, calculatePrice]);
 
   return (
     <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6">

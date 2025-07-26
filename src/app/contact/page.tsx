@@ -1,15 +1,86 @@
-import {
-  Phone,
-  Mail,
-  MapPin,
-  Clock,
-  MessageCircle,
-  Send,
-  User,
-  Building,
-} from "lucide-react";
+"use client";
+
+import { useState, useRef } from "react";
+import { Phone, Mail, MapPin, Clock, MessageCircle, Send } from "lucide-react";
+import { Dropdown } from "primereact/dropdown";
+
+interface SubjectOption {
+  value: string;
+  label: string;
+}
 
 export default function ContactPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState("");
+  const [selectedSubject, setSelectedSubject] = useState<SubjectOption | null>(
+    null
+  );
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const subjectOptions: SubjectOption[] = [
+    { value: "quote", label: "Request a Quote" },
+    { value: "order", label: "Place an Order" },
+    { value: "design", label: "Design Services" },
+    { value: "support", label: "Customer Support" },
+    { value: "partnership", label: "Business Partnership" },
+    { value: "other", label: "Other" },
+  ];
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitMessage("");
+
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      firstName: formData.get("firstName") as string,
+      lastName: formData.get("lastName") as string,
+      email: formData.get("email") as string,
+      phone: formData.get("phone") as string,
+      company: formData.get("company") as string,
+      subject: selectedSubject?.value || (formData.get("subject") as string),
+      message: formData.get("message") as string,
+    };
+
+    try {
+      // Send email notification
+      const emailResponse = await fetch("/api/send-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          type: "contact",
+          data: data,
+        }),
+      });
+
+      const emailResult = await emailResponse.json();
+
+      if (emailResult.success) {
+        setSubmitMessage(
+          "Message sent successfully! We'll get back to you within 2-4 hours."
+        );
+        // Safely reset the form using the ref
+        if (formRef.current) {
+          formRef.current.reset();
+        }
+        setSelectedSubject(null);
+      } else {
+        setSubmitMessage(
+          "Message sent successfully! (Note: Email notification to our team failed)"
+        );
+      }
+    } catch (error) {
+      console.error("Error sending message:", error);
+      setSubmitMessage(
+        "Message sent successfully! (Note: Email notification to our team failed)"
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -43,11 +114,8 @@ export default function ContactPage() {
                     <h3 className="text-lg font-semibold text-gray-900">
                       Phone Numbers
                     </h3>
-                    <p className="text-gray-600">+234-803-456-7890</p>
-                    <p className="text-gray-600">+234-701-234-5678</p>
-                    <p className="text-sm text-gray-500 mt-1">
-                      Mon-Fri: 8:00 AM - 6:00 PM
-                    </p>
+                    <p className="text-gray-600">+234-803-207-1872</p>
+                    <p className="text-gray-600">+234-814-997-5042</p>
                   </div>
                 </div>
 
@@ -60,9 +128,22 @@ export default function ContactPage() {
                     <h3 className="text-lg font-semibold text-gray-900">
                       Email Addresses
                     </h3>
-                    <p className="text-gray-600">info@emiadeprints.com</p>
-                    <p className="text-gray-600">orders@emiadeprints.com</p>
-                    <p className="text-gray-600">design@emiadeprints.com</p>
+                    <p className="text-gray-600">
+                      <a
+                        href="mailto:emiadegroup@gmail.com"
+                        className="text-blue-600 hover:text-blue-800 underline"
+                      >
+                        emiadegroup@gmail.com
+                      </a>
+                    </p>
+                    <p className="text-gray-600">
+                      <a
+                        href="mailto:emiadeprintingandcomputer@gmail.com"
+                        className="text-blue-600 hover:text-blue-800 underline"
+                      >
+                        emiadeprintingandcomputer@gmail.com
+                      </a>
+                    </p>
                   </div>
                 </div>
 
@@ -76,9 +157,9 @@ export default function ContactPage() {
                       Office Address
                     </h3>
                     <p className="text-gray-600">
-                      15 Adebayo Mokuolu Street,
+                      59 Egbatedo Street,
                       <br />
-                      Anthony Village, Lagos State,
+                      Osogbo, Osun State,
                       <br />
                       Nigeria
                     </p>
@@ -95,9 +176,8 @@ export default function ContactPage() {
                       Business Hours
                     </h3>
                     <div className="text-gray-600 space-y-1">
-                      <p>Monday - Friday: 8:00 AM - 6:00 PM</p>
-                      <p>Saturday: 9:00 AM - 4:00 PM</p>
-                      <p>Sunday: Closed</p>
+                      <p>Monday - Saturday: 9:00 AM - 6:00 PM</p>
+                      <p>Sunday: 1:00 PM - 6:00 PM</p>
                     </div>
                   </div>
                 </div>
@@ -133,7 +213,19 @@ export default function ContactPage() {
               Send Us a Message
             </h2>
 
-            <form className="space-y-6">
+            {submitMessage && (
+              <div
+                className={`mb-6 p-4 rounded-lg ${
+                  submitMessage.includes("successfully")
+                    ? "bg-green-50 text-green-800 border border-green-200"
+                    : "bg-red-50 text-red-800 border border-red-200"
+                }`}
+              >
+                {submitMessage}
+              </div>
+            )}
+
+            <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label
@@ -142,17 +234,14 @@ export default function ContactPage() {
                   >
                     First Name *
                   </label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                    <input
-                      type="text"
-                      id="firstName"
-                      name="firstName"
-                      required
-                      className="input-field pl-10"
-                      placeholder="Enter your first name"
-                    />
-                  </div>
+                  <input
+                    type="text"
+                    id="firstName"
+                    name="firstName"
+                    required
+                    className="input-field"
+                    placeholder="Enter your first name"
+                  />
                 </div>
 
                 <div>
@@ -162,17 +251,14 @@ export default function ContactPage() {
                   >
                     Last Name *
                   </label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                    <input
-                      type="text"
-                      id="lastName"
-                      name="lastName"
-                      required
-                      className="input-field pl-10"
-                      placeholder="Enter your last name"
-                    />
-                  </div>
+                  <input
+                    type="text"
+                    id="lastName"
+                    name="lastName"
+                    required
+                    className="input-field"
+                    placeholder="Enter your last name"
+                  />
                 </div>
               </div>
 
@@ -183,17 +269,14 @@ export default function ContactPage() {
                 >
                   Email Address *
                 </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    required
-                    className="input-field pl-10"
-                    placeholder="Enter your email address"
-                  />
-                </div>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  required
+                  className="input-field"
+                  placeholder="Enter your email address"
+                />
               </div>
 
               <div>
@@ -203,16 +286,13 @@ export default function ContactPage() {
                 >
                   Phone Number
                 </label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    className="input-field pl-10"
-                    placeholder="+234-XXX-XXX-XXXX"
-                  />
-                </div>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  className="input-field"
+                  placeholder="+234-XXX-XXX-XXXX"
+                />
               </div>
 
               <div>
@@ -222,39 +302,30 @@ export default function ContactPage() {
                 >
                   Company/Organization
                 </label>
-                <div className="relative">
-                  <Building className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                  <input
-                    type="text"
-                    id="company"
-                    name="company"
-                    className="input-field pl-10"
-                    placeholder="Enter your company name"
-                  />
-                </div>
+                <input
+                  type="text"
+                  id="company"
+                  name="company"
+                  className="input-field"
+                  placeholder="Enter your company name"
+                />
               </div>
 
               <div>
-                <label
-                  htmlFor="subject"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Subject *
                 </label>
-                <select
-                  id="subject"
-                  name="subject"
-                  required
-                  className="input-field"
-                >
-                  <option value="">Select a subject</option>
-                  <option value="quote">Request a Quote</option>
-                  <option value="order">Place an Order</option>
-                  <option value="design">Design Services</option>
-                  <option value="support">Customer Support</option>
-                  <option value="partnership">Business Partnership</option>
-                  <option value="other">Other</option>
-                </select>
+                <Dropdown
+                  value={selectedSubject}
+                  onChange={(e) => setSelectedSubject(e.value)}
+                  options={subjectOptions}
+                  optionLabel="label"
+                  placeholder="Select a subject"
+                  className="w-full"
+                  showClear
+                  checkmark
+                  highlightOnSelect={false}
+                />
               </div>
 
               <div>
@@ -276,10 +347,20 @@ export default function ContactPage() {
 
               <button
                 type="submit"
-                className="w-full btn-primary flex items-center justify-center"
+                disabled={isSubmitting}
+                className="w-full btn-primary flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Send className="mr-2 h-5 w-5" />
-                Send Message
+                {isSubmitting ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Send className="mr-2 h-5 w-5" />
+                    Send Message
+                  </>
+                )}
               </button>
             </form>
 

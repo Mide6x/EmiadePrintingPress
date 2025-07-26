@@ -1,43 +1,78 @@
 "use client";
 
 import { useState, useRef } from "react";
-import {
-  Upload,
-  X,
-  FileText,
-  Image,
-  AlertCircle,
-  CheckCircle,
-} from "lucide-react";
+import Image from "next/image";
+import { Upload, X, FileText, Image as ImageIcon } from "lucide-react";
 
 interface FileUploaderProps {
-  type: "design" | "payment-proof";
-  onFileUpload?: (files: File[]) => void;
-  maxFiles?: number;
-  maxSizePerFile?: number; // in MB
+  onFilesSelected: (files: File[]) => void;
   acceptedTypes?: string[];
+  maxFiles?: number;
+  maxFileSize?: number; // in MB
 }
 
-interface UploadedFile {
-  file: File;
-  id: string;
-  preview?: string;
-  status: "uploading" | "success" | "error";
-  progress: number;
-}
-
-const FileUploader = ({
-  type,
-  onFileUpload,
+export default function FileUploader({
+  onFilesSelected,
+  acceptedTypes = ["image/*", ".pdf", ".doc", ".docx"],
   maxFiles = 5,
-  maxSizePerFile = 10,
-  acceptedTypes = type === "design"
-    ? [".pdf", ".ai", ".psd", ".jpg", ".jpeg", ".png", ".svg"]
-    : [".jpg", ".jpeg", ".png", ".pdf"],
-}: FileUploaderProps) => {
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  maxFileSize = 10, // 10MB default
+}: FileUploaderProps) {
   const [dragActive, setDragActive] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [errors, setErrors] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const validateFile = (file: File): string | null => {
+    // Check file size
+    if (file.size > maxFileSize * 1024 * 1024) {
+      return `File ${file.name} is too large. Maximum size is ${maxFileSize}MB.`;
+    }
+
+    // Check file type
+    const isValidType = acceptedTypes.some((type) => {
+      if (type.startsWith(".")) {
+        return file.name.toLowerCase().endsWith(type.toLowerCase());
+      }
+      if (type.includes("/*")) {
+        const baseType = type.split("/")[0];
+        return file.type.startsWith(baseType);
+      }
+      return file.type === type;
+    });
+
+    if (!isValidType) {
+      return `File ${file.name} is not an accepted file type.`;
+    }
+
+    return null;
+  };
+
+  const handleFiles = (files: FileList | null) => {
+    if (!files) return;
+
+    const newErrors: string[] = [];
+    const validFiles: File[] = [];
+
+    Array.from(files).forEach((file) => {
+      const error = validateFile(file);
+      if (error) {
+        newErrors.push(error);
+      } else {
+        validFiles.push(file);
+      }
+    });
+
+    // Check if adding these files would exceed maxFiles
+    if (selectedFiles.length + validFiles.length > maxFiles) {
+      newErrors.push(`Maximum ${maxFiles} files allowed.`);
+    } else {
+      const updatedFiles = [...selectedFiles, ...validFiles];
+      setSelectedFiles(updatedFiles);
+      onFilesSelected(updatedFiles);
+    }
+
+    setErrors(newErrors);
+  };
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -53,147 +88,43 @@ const FileUploader = ({
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFiles(Array.from(e.dataTransfer.files));
-    }
+    handleFiles(e.dataTransfer.files);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
-    if (e.target.files && e.target.files[0]) {
-      handleFiles(Array.from(e.target.files));
+    handleFiles(e.target.files);
+  };
+
+  const removeFile = (index: number) => {
+    const updatedFiles = selectedFiles.filter((_, i) => i !== index);
+    setSelectedFiles(updatedFiles);
+    onFilesSelected(updatedFiles);
+  };
+
+  const getFileIcon = (file: File) => {
+    if (file.type.startsWith("image/")) {
+      return <ImageIcon className="h-8 w-8 text-blue-500" />;
     }
+    return <FileText className="h-8 w-8 text-gray-500" />;
   };
 
-  const handleFiles = (files: File[]) => {
-    const validFiles: File[] = [];
-    const errors: string[] = [];
-
-    files.forEach((file) => {
-      // Check file count
-      if (uploadedFiles.length + validFiles.length >= maxFiles) {
-        errors.push(`Maximum ${maxFiles} files allowed`);
-        return;
-      }
-
-      // Check file size
-      if (file.size > maxSizePerFile * 1024 * 1024) {
-        errors.push(
-          `${file.name} is too large. Maximum size is ${maxSizePerFile}MB`
-        );
-        return;
-      }
-
-      // Check file type
-      const fileExtension = "." + file.name.split(".").pop()?.toLowerCase();
-      if (!acceptedTypes.includes(fileExtension)) {
-        errors.push(`${file.name} is not a supported file type`);
-        return;
-      }
-
-      validFiles.push(file);
-    });
-
-    if (errors.length > 0) {
-      alert(errors.join("\n"));
-    }
-
-    if (validFiles.length > 0) {
-      uploadFiles(validFiles);
-    }
-  };
-
-  const uploadFiles = (files: File[]) => {
-    const newFiles: UploadedFile[] = files.map((file) => ({
-      file,
-      id: Math.random().toString(36).substr(2, 9),
-      preview: file.type.startsWith("image/")
-        ? URL.createObjectURL(file)
-        : undefined,
-      status: "uploading",
-      progress: 0,
-    }));
-
-    setUploadedFiles((prev) => [...prev, ...newFiles]);
-
-    // Simulate upload progress
-    newFiles.forEach((uploadedFile) => {
-      simulateUpload(uploadedFile.id);
-    });
-
-    onFileUpload?.(files);
-  };
-
-  const simulateUpload = (fileId: string) => {
-    const interval = setInterval(() => {
-      setUploadedFiles((prev) =>
-        prev.map((file) => {
-          if (file.id === fileId) {
-            const newProgress = Math.min(
-              file.progress + Math.random() * 30,
-              100
-            );
-            return {
-              ...file,
-              progress: newProgress,
-              status: newProgress === 100 ? "success" : "uploading",
-            };
-          }
-          return file;
-        })
-      );
-    }, 200);
-
-    setTimeout(() => {
-      clearInterval(interval);
-      setUploadedFiles((prev) =>
-        prev.map((file) =>
-          file.id === fileId
-            ? { ...file, progress: 100, status: "success" }
-            : file
-        )
-      );
-    }, 2000);
-  };
-
-  const removeFile = (fileId: string) => {
-    setUploadedFiles((prev) => {
-      const fileToRemove = prev.find((f) => f.id === fileId);
-      if (fileToRemove?.preview) {
-        URL.revokeObjectURL(fileToRemove.preview);
-      }
-      return prev.filter((f) => f.id !== fileId);
-    });
-  };
-
-  const getFileIcon = (fileName: string) => {
-    const extension = fileName.split(".").pop()?.toLowerCase();
-    if (["jpg", "jpeg", "png", "gif", "svg"].includes(extension || "")) {
-      return <Image className="h-5 w-5 text-blue-500" />;
-    }
-    return <FileText className="h-5 w-5 text-gray-500" />;
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
   return (
     <div className="w-full">
-      <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          {type === "design" ? "Upload Design Files" : "Upload Payment Proof"}
-        </h3>
-        <p className="text-sm text-gray-600">
-          {type === "design"
-            ? "Upload your design files or let our team create designs for you"
-            : "Upload a screenshot or photo of your payment confirmation"}
-        </p>
-      </div>
-
-      {/* Upload Area */}
+      {/* Drag and Drop Area */}
       <div
-        className={`relative border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+        className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
           dragActive
             ? "border-purple-500 bg-purple-50"
-            : "border-gray-300 hover:border-gray-400"
+            : "border-gray-300 hover:border-purple-400"
         }`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
@@ -203,131 +134,88 @@ const FileUploader = ({
         <input
           ref={fileInputRef}
           type="file"
-          multiple={maxFiles > 1}
+          multiple
           accept={acceptedTypes.join(",")}
           onChange={handleChange}
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
         />
-
-        <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-        <p className="text-lg font-medium text-gray-900 mb-2">
-          Drop files here or click to browse
-        </p>
-        <p className="text-sm text-gray-500 mb-4">
-          Supported formats: {acceptedTypes.join(", ")}
-        </p>
-        <p className="text-xs text-gray-400">
-          Maximum {maxFiles} files, {maxSizePerFile}MB per file
-        </p>
+        <div className="space-y-4">
+          <Upload className="mx-auto h-12 w-12 text-gray-400" />
+          <div>
+            <p className="text-lg font-medium text-gray-900">
+              Drop files here or click to browse
+            </p>
+            <p className="text-sm text-gray-500 mt-1">
+              Accepted types: {acceptedTypes.join(", ")}
+            </p>
+            <p className="text-sm text-gray-500">
+              Maximum {maxFiles} files, {maxFileSize}MB each
+            </p>
+          </div>
+        </div>
       </div>
 
-      {/* File List */}
-      {uploadedFiles.length > 0 && (
-        <div className="mt-6 space-y-3">
-          <h4 className="text-sm font-medium text-gray-900">Uploaded Files</h4>
-          {uploadedFiles.map((uploadedFile) => (
-            <div
-              key={uploadedFile.id}
-              className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg"
-            >
-              {uploadedFile.preview ? (
-                <img
-                  src={uploadedFile.preview}
-                  alt={`Preview of ${uploadedFile.file.name}`}
-                  className="h-10 w-10 object-cover rounded"
-                />
-              ) : (
-                getFileIcon(uploadedFile.file.name)
-              )}
+      {/* Error Messages */}
+      {errors.length > 0 && (
+        <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <h4 className="text-sm font-medium text-red-800 mb-2">
+            Upload Errors:
+          </h4>
+          <ul className="text-sm text-red-700 space-y-1">
+            {errors.map((error, index) => (
+              <li key={index}>• {error}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
-                  {uploadedFile.file.name}
-                </p>
-                <p className="text-xs text-gray-500">
-                  {(uploadedFile.file.size / 1024 / 1024).toFixed(2)} MB
-                </p>
-
-                {uploadedFile.status === "uploading" && (
-                  <div className="mt-1">
-                    <div className="bg-gray-200 rounded-full h-1.5">
-                      <div
-                        className="bg-purple-600 h-1.5 rounded-full transition-all duration-300"
-                        style={{ width: `${uploadedFile.progress}%` }}
-                      ></div>
+      {/* Selected Files */}
+      {selectedFiles.length > 0 && (
+        <div className="mt-6">
+          <h4 className="text-sm font-medium text-gray-900 mb-3">
+            Selected Files ({selectedFiles.length}/{maxFiles})
+          </h4>
+          <div className="space-y-3">
+            {selectedFiles.map((file, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+              >
+                <div className="flex items-center space-x-3">
+                  {file.type.startsWith("image/") ? (
+                    <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-gray-200">
+                      <Image
+                        src={URL.createObjectURL(file)}
+                        alt={`Preview of ${file.name}`}
+                        fill
+                        className="object-cover"
+                      />
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Uploading... {Math.round(uploadedFile.progress)}%
+                  ) : (
+                    <div className="w-12 h-12 rounded-lg bg-gray-200 flex items-center justify-center">
+                      {getFileIcon(file)}
+                    </div>
+                  )}
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">
+                      {file.name}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {formatFileSize(file.size)}
                     </p>
                   </div>
-                )}
-              </div>
-
-              <div className="flex items-center space-x-2">
-                {uploadedFile.status === "success" && (
-                  <CheckCircle className="h-5 w-5 text-green-500" />
-                )}
-                {uploadedFile.status === "error" && (
-                  <AlertCircle className="h-5 w-5 text-red-500" />
-                )}
+                </div>
                 <button
-                  onClick={() => removeFile(uploadedFile.id)}
-                  className="text-gray-400 hover:text-red-500 transition-colors"
+                  onClick={() => removeFile(index)}
+                  className="p-1 text-gray-400 hover:text-red-500 transition-colors"
                 >
                   <X className="h-4 w-4" />
                 </button>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Design Assistance */}
-      {type === "design" && (
-        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="flex items-start">
-            <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5 mr-3" />
-            <div>
-              <h4 className="text-sm font-medium text-blue-800">
-                Need Design Help?
-              </h4>
-              <p className="text-sm text-blue-700 mt-1">
-                Don&apos;t have design files? Our professional designers can
-                create stunning designs for you.
-              </p>
-              <div className="mt-3">
-                <a
-                  href="mailto:design@presscompany.com?subject=Design Assistance Request"
-                  className="text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md transition-colors"
-                >
-                  Contact Designer
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Payment Instructions */}
-      {type === "payment-proof" && (
-        <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-          <div className="flex items-start">
-            <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5 mr-3" />
-            <div>
-              <h4 className="text-sm font-medium text-amber-800">
-                Payment Instructions
-              </h4>
-              <p className="text-sm text-amber-700 mt-1">
-                After making your bank transfer, upload a clear screenshot or
-                photo of your payment confirmation. Include the transaction
-                reference number if visible.
-              </p>
-            </div>
+            ))}
           </div>
         </div>
       )}
     </div>
   );
-};
-
-export default FileUploader;
+}

@@ -41,7 +41,7 @@ const Footer = () => {
                   href="/catalog/digital"
                   className="text-gray-300 hover:text-white transition-colors"
                 >
-                  Digital Printing
+                  Printing
                 </Link>
               </li>
               <li>
@@ -103,28 +103,30 @@ const Footer = () => {
             <div className="space-y-3">
               <div className="flex items-center space-x-2">
                 <Phone className="h-4 w-4 text-amber-500" />
-                <span className="text-gray-300 text-sm">+234-XXX-XXX-XXXX</span>
+                <span className="text-gray-300 text-sm">+234-803-207-1872</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Mail className="h-4 w-4 text-amber-500" />
                 <span className="text-gray-300 text-sm">
-                  design@presscompany.com
+                  emiadegroup@gmail.com
                 </span>
               </div>
               <div className="flex items-start space-x-2">
                 <MapPin className="h-4 w-4 text-amber-500 mt-0.5" />
                 <span className="text-gray-300 text-sm">
-                  123 Printing Street,
+                  59 Egbatedo Street,
                   <br />
-                  Lagos, Nigeria
+                  Osogbo, Osun State,
+                  <br />
+                  Nigeria
                 </span>
               </div>
               <div className="flex items-start space-x-2">
                 <Clock className="h-4 w-4 text-amber-500 mt-0.5" />
                 <span className="text-gray-300 text-sm">
-                  Mon - Fri: 8:00 AM - 6:00 PM
+                  Monday - Saturday: 9:00 AM - 6:00 PM
                   <br />
-                  Sat: 9:00 AM - 4:00 PM
+                  Sunday: 1:00 PM - 6:00 PM
                 </span>
               </div>
             </div>

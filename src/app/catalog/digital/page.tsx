@@ -104,24 +104,24 @@ export default function DigitalCatalogPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-white py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Digital Printing Services
+            Printing Services
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            High-quality digital printing for small to medium runs with quick
-            turnaround times. Perfect for business materials, marketing
-            collateral, and promotional items.
+            We provide high-quality printing services for your businesses,
+            brands, birthdays, anniversaries, weddings and other events, with
+            quick turnaround times.
           </p>
         </div>
 
         {/* Features */}
-        <div className="bg-white rounded-lg shadow-md p-8 mb-12">
+        <div className="bg-gray-50 rounded-lg shadow-md p-8 mb-12">
           <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-            Why Choose Our Digital Printing?
+            Why Choose Emiade Prints?
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
@@ -173,11 +173,11 @@ export default function DigitalCatalogPage() {
         {/* CTA Section */}
         <div className="bg-gradient-to-r from-purple-600 to-purple-800 rounded-lg p-8 text-center text-white">
           <h2 className="text-2xl font-bold mb-4">
-            Ready to Start Your Digital Printing Project?
+            Ready to Start Your Printing Project?
           </h2>
           <p className="text-purple-100 mb-6 max-w-2xl mx-auto">
-            Get a free quote for your digital printing needs. Our team is ready
-            to help bring your vision to life with professional quality and fast
+            Get a free quote for your printing needs. Our team is ready to help
+            bring your vision to life with professional quality and fast
             turnaround.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -189,7 +189,7 @@ export default function DigitalCatalogPage() {
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
             <a
-              href="mailto:design@presscompany.com?subject=Digital Printing Inquiry"
+              href="mailto:emiadegroup@gmail.com?subject=Printing Inquiry"
               className="border-2 border-white text-white hover:bg-white hover:text-purple-900 px-8 py-3 rounded-lg font-semibold transition-colors duration-200"
             >
               Contact Designer
@@ -199,7 +199,7 @@ export default function DigitalCatalogPage() {
 
         {/* Additional Info */}
         <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-gray-50 rounded-lg shadow-md p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
               File Requirements
             </h3>
@@ -211,7 +211,7 @@ export default function DigitalCatalogPage() {
               <li>• Text should be outlined or fonts embedded</li>
             </ul>
           </div>
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-gray-50 rounded-lg shadow-md p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
               Turnaround Times
             </h3>

@@ -8,60 +8,25 @@ import {
   Printer,
   Palette,
   Package,
+  Phone,
+  Mail,
+  MapPin,
 } from "lucide-react";
-import ProductCard from "../../components/ui/ProductCard";
 
 export default function Home() {
-  const featuredProducts = [
-    {
-      id: "business-cards",
-      name: "Business Cards",
-      description:
-        "Professional business cards with premium finishes. Make a lasting first impression.",
-      image:
-        "https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=300&h=200&fit=crop&crop=center",
-      startingPrice: 5000,
-      category: "digital" as const,
-      features: ["Premium cardstock", "Multiple finishes", "Fast turnaround"],
-      popular: true,
-    },
-    {
-      id: "flyers",
-      name: "Flyers & Brochures",
-      description:
-        "Eye-catching flyers and brochures for marketing campaigns and events.",
-      image:
-        "https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=300&h=200&fit=crop&crop=center",
-      startingPrice: 3000,
-      category: "digital" as const,
-      features: ["Full color printing", "Various sizes", "Bulk discounts"],
-    },
-    {
-      id: "books",
-      name: "Books & Magazines",
-      description:
-        "Professional book and magazine printing with binding options.",
-      image:
-        "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=300&h=200&fit=crop&crop=center",
-      startingPrice: 15000,
-      category: "offset" as const,
-      features: ["Perfect binding", "Saddle stitching", "Custom covers"],
-    },
-  ];
-
   const stats = [
     { icon: Users, label: "Happy Customers", value: "5,000+" },
     { icon: Printer, label: "Projects Completed", value: "25,000+" },
-    { icon: Clock, label: "Years Experience", value: "10+" },
+    { icon: Clock, label: "Years Experience", value: "33+" },
     { icon: Star, label: "Customer Rating", value: "4.9/5" },
   ];
 
   const services = [
     {
       icon: Printer,
-      title: "Digital Printing",
+      title: "Printing",
       description:
-        "High-quality digital printing for small to medium runs with quick turnaround times.",
+        "High-quality Printing for small to medium runs with quick turnaround times.",
       features: ["Business cards", "Flyers", "Banners", "Posters"],
     },
     {
@@ -96,14 +61,20 @@ export default function Home() {
               services across Nigeria with unmatched quality and competitive
               prices.
             </p>
+
+            {/* Contact Information */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+              <div className="flex items-center justify-center text-purple-100">
+                <Phone className="h-5 w-5 mr-2" />
+                <span className="font-semibold">+234-803-207-1872</span>
+              </div>
+              <div className="flex items-center justify-center text-purple-100">
+                <Mail className="h-5 w-5 mr-2" />
+                <span className="font-semibold">emiadegroup@gmail.com</span>
+              </div>
+            </div>
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/catalog/digital"
-                className="bg-amber-500 hover:bg-amber-600 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200 flex items-center justify-center"
-              >
-                Browse Catalog
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
               <Link
                 href="/order"
                 className="border-2 border-white text-white hover:bg-white hover:text-purple-900 px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200"
@@ -151,7 +122,7 @@ export default function Home() {
               Our Services
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              We offer comprehensive printing solutions for businesses,
+              We offer high-quality printing services for businesses,
               individuals, and organizations across Nigeria.
             </p>
           </div>
@@ -188,33 +159,141 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured Products */}
+      {/* Partners Showcase */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Popular Products
+              Our Trusted Partners
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Discover our most requested printing services with competitive
-              pricing and exceptional quality.
+              We&apos;re proud to serve these esteemed organizations and
+              institutions across Nigeria.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} {...product} />
-            ))}
+          <div className="relative overflow-hidden">
+            <div className="flex animate-scroll space-x-16">
+              {/* First set of partners */}
+              <div className="flex space-x-16 min-w-max">
+                <span className="text-2xl font-serif italic text-gray-700 tracking-wide">
+                  Salvation Nursery and Primary School, Inisa
+                </span>
+
+                <span className="text-2xl font-mono font-bold text-gray-700 uppercase tracking-wider">
+                  Women Organizations, Oke-Osun Diocese
+                </span>
+
+                <span className="text-2xl font-sans font-light text-gray-700 normal-case">
+                  Osun Diocesan Nursery and Primary School
+                </span>
+
+                <span className="text-2xl font-serif font-semibold text-gray-700 capitalize">
+                  John Mckay Anglican Grammar School
+                </span>
+
+                <span className="text-2xl font-mono font-medium text-gray-700 lowercase tracking-tight">
+                  Olatunji Idowu
+                </span>
+
+                <span className="text-2xl font-sans font-bold text-gray-700 uppercase tracking-wide">
+                  All Souls Anglican Church (Tracts)
+                </span>
+
+                <span className="text-2xl font-serif font-normal text-gray-700 italic">
+                  Oke-Osun Anglican Diocese
+                </span>
+
+                <span className="text-2xl font-mono font-light text-gray-700 normal-case tracking-normal">
+                  Osun Anglican Diocese
+                </span>
+              </div>
+
+              {/* Duplicate set for seamless loop */}
+              <div className="flex space-x-16 min-w-max">
+                <span className="text-2xl font-serif italic text-gray-700 tracking-wide">
+                  Salvation Nursery and Primary School, Inisa
+                </span>
+
+                <span className="text-2xl font-mono font-bold text-gray-700 uppercase tracking-wider">
+                  Women Organizations, Oke-Osun Diocese
+                </span>
+
+                <span className="text-2xl font-sans font-light text-gray-700 normal-case">
+                  Osun Diocesan Nursery and Primary School
+                </span>
+
+                <span className="text-2xl font-serif font-semibold text-gray-700 capitalize">
+                  John Mckay Anglican Grammar School
+                </span>
+
+                <span className="text-2xl font-mono font-medium text-gray-700 lowercase tracking-tight">
+                  Olatunji Idowu
+                </span>
+
+                <span className="text-2xl font-sans font-bold text-gray-700 uppercase tracking-wide">
+                  All Souls Anglican Church (Tracts)
+                </span>
+
+                <span className="text-2xl font-serif font-normal text-gray-700 italic">
+                  Oke-Osun Anglican Diocese
+                </span>
+
+                <span className="text-2xl font-mono font-light text-gray-700 normal-case tracking-normal">
+                  Osun Anglican Diocese
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Location & Hours Section */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Visit Our Office
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Established in 1992, registered in 2025. Come visit us for
+              personalized service and consultation.
+            </p>
           </div>
 
-          <div className="text-center mt-12">
-            <Link
-              href="/catalog/digital"
-              className="btn-primary inline-flex items-center"
-            >
-              View All Products
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <div className="bg-purple-50 rounded-lg p-8 text-center">
+              <div className="flex justify-center mb-4">
+                <MapPin className="h-12 w-12 text-purple-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                Location
+              </h3>
+              <p className="text-gray-600">
+                59, Egbatedo Street
+                <br />
+                Osogbo, Nigeria
+              </p>
+            </div>
+
+            <div className="bg-amber-50 rounded-lg p-8 text-center">
+              <div className="flex justify-center mb-4">
+                <Clock className="h-12 w-12 text-amber-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                Business Hours
+              </h3>
+              <div className="text-gray-600 space-y-1">
+                <p>
+                  <strong>Monday - Saturday:</strong>
+                </p>
+                <p>8:00 AM – 6:00 PM</p>
+                <p>
+                  <strong>Sunday:</strong>
+                </p>
+                <p>1:00 PM - 6:00 PM</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -316,7 +395,7 @@ export default function Home() {
               <ArrowRight className="ml-2 h-5 w-5" />
             </a>
             <a
-              href="mailto:design@presscompany.com?subject=Project Inquiry"
+              href="/contact"
               className="border-2 border-white text-white hover:bg-white hover:text-purple-900 px-8 py-4 rounded-lg text-lg font-semibold transition-colors duration-200"
             >
               Contact Designer

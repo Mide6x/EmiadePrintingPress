@@ -66,7 +66,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
               <div className="flex items-center justify-center text-purple-100">
                 <Phone className="h-5 w-5 mr-2" />
-                <span className="font-semibold">+234-803-207-1872</span>
+                <span className="font-semibold">+234 80 3207 1872</span>
               </div>
               <div className="flex items-center justify-center text-purple-100">
                 <Mail className="h-5 w-5 mr-2" />

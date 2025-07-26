@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     locale: "en_NG",
   },
   other: {
-    "contact:phone": "+234-803-207-1872",
+    "contact:phone": "+234 80 3207 1872",
     "contact:email": "emiadegroup@gmail.com",
     "business:address": "59, Egbatedo Street, Osogbo, Nigeria",
     "business:hours": "Mon-Sat: 8:00 AM - 6:00 PM, Sun: 1:00 PM - 6:00 PM",

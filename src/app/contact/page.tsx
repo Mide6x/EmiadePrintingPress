@@ -114,7 +114,7 @@ export default function ContactPage() {
                     <h3 className="text-lg font-semibold text-gray-900">
                       Phone Numbers
                     </h3>
-                    <p className="text-gray-600">+234-803-207-1872</p>
+                    <p className="text-gray-600">+234 80 3207 1872</p>
                     <p className="text-gray-600">+234-814-997-5042</p>
                   </div>
                 </div>
